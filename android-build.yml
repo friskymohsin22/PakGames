@@ -1,9 +1,10 @@
-name: android-build.yml
+name: Android Build
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,20 +14,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
 
-      - name: Build Release APK
+      - name: Build release APK
         run: ./gradlew assembleRelease
 
-      - name: Upload Release APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PakGames-APK
+          name: PakGames-Release-APK
           path: app/build/outputs/apk/release/*.apk
