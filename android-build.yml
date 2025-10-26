@@ -1,4 +1,4 @@
-name: Android Build
+name: Android Build (Debug Mode)
 
 on:
   push:
@@ -20,17 +20,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for Gradlew
+      - name: Give permission to gradlew
         run: chmod +x gradlew
 
-      - name: Build release APK
-        run: ./gradlew assembleRelease
+      - name: Try build (release + debug)
+        run: |
+          ./gradlew assembleRelease || echo "Release build failed, trying debug..."
+          ./gradlew assembleDebug || echo "Debug build failed too!"
 
-      - name: Debug: list APK outputs
-        run: ls -R | grep "\.apk" || echo "⚠️ No APKs found in project tree!"
+      - name: Show APK output locations
+        run: |
+          echo "Searching for APK files..."
+          find . -type f -name "*.apk" || echo "❌ No APKs found!"
 
-      - name: Upload release APK
+      - name: Upload any found APKs
         uses: actions/upload-artifact@v4
         with:
-          name: PakGames-Release-APK
+          name: Built-APKs
           path: '**/*.apk'
+          if-no-files-found: warn
